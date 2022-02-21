@@ -6,7 +6,9 @@
   "author": "Joaquim Verges <joaquim.verges@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "node-cron": "^3.0.0",
+    "twitter-api-v2": "^1.11.0"
   },
   "scripts": {
     "serve": "node app.js"
