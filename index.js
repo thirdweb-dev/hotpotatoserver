@@ -20,7 +20,7 @@ app.post("/import", (req, res) => {
 });
 
 function run() {
-  server.listen(3000, () => {
+  app.listen(3000, () => {
     console.log("server running on 3000");
   });
 }

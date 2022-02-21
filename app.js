@@ -4,7 +4,7 @@ var cron = require("node-cron");
 const fs = require("fs");
 
 const client = new TwitterApi(process.env.TWITTER_BEARER);
-const dbpath = "/data/pool.json";
+const dbpath = "./pool.json";
 
 let db = {};
 if (!fs.existsSync(dbpath)) {
