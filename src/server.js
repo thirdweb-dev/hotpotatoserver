@@ -1,5 +1,4 @@
 const express = require("express");
-const { tweetTransfer } = require("./app");
 const app = express();
 const port = 3000;
 
@@ -19,10 +18,6 @@ app.post("/import", (req, res) => {
   // TODO write to disk
 });
 
-function run() {
-  app.listen(3000, () => {
-    console.log("server running on 3000");
-  });
-}
-
-module.exports = run;
+app.listen(3000, () => {
+  console.log("server running on 3000");
+});

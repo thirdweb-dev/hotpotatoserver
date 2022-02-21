@@ -6,6 +6,9 @@
   "author": "Joaquim Verges <joaquim.verges@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@thirdweb-dev/sdk": "^2.0.0-nightly.17",
+    "dotenv": "^16.0.0",
+    "ethers": "^5.5.4",
     "express": "^4.17.3",
     "node-cron": "^3.0.0",
     "twitter-api-v2": "^1.11.0"

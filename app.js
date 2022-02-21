@@ -1,58 +1,20 @@
-const server = require(".");
-const { TwitterApi } = require("twitter-api-v2");
+require("dotenv").config();
+const tw = require("./src/thirdweb");
+const twitter = require("./src/twitter");
+const db = require("./src/db");
 var cron = require("node-cron");
-const fs = require("fs");
-
-const client = new TwitterApi(process.env.TWITTER_BEARER);
-const dbpath = "./pool.json";
-
-let db = {};
-if (!fs.existsSync(dbpath)) {
-  fs.writeFileSync(dbpath, JSON.stringify({}));
-}
-
-const database = () => {
-  return JSON.parse(fs.readFileSync(dbpath));
-};
-
-// add new wallet to the address pool
-const addWallet = (address, username) => {
-  fs.writeFileSync(
-    dbpath,
-    JSON.stringify({ ...database(), [address]: username })
-  );
-};
-
-// run server
-server();
-
-async function tweetTransfer(address) {
-  const username = database()[address];
-  try {
-    await client.v1.tweet(
-      `The 🔥🥔 NFT has been transferred to ${
-        username ? "@" + username : address
-      }\n\nYou have 24 hours to transfer 🔥🥔 NFT to another address.\n\nJoin the Hot Potato NFT game: ${landing}`
-    );
-  } catch (e) {
-    console.log(e);
-  }
-}
+const server = require("./src/server");
 
 // check every minute for new replies
 cron.schedule("* * * * *", async () => {
   try {
-    const query = await client.search("(to:hotpotatogg)");
-    console.log(query);
+    const nft = await tw.nftContract.get(0);
+    console.log("CRON TIME", nft);
+    //const query = await twitter.client.search("(to:hotpotatogg)");
+    //console.log(query);
     // TODO: add new addresses to pool
-    // addWallet(query..., query....);
+    // db.addWallet(query..., query....);
   } catch (e) {
     console.log(e);
   }
 });
-
-module.exports = {
-  tweetTransfer,
-  database,
-  addWallet,
-};
