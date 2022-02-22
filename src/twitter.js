@@ -1,7 +1,5 @@
 const { TwitterApi } = require("twitter-api-v2");
-const client = new TwitterApi(
-process.env.TWITTER_BEARER,
-);
+const client = new TwitterApi(process.env.TWITTER_BEARER);
 const db = require("./db");
 const { ethers } = require("ethers");
 
@@ -21,7 +19,10 @@ async function tweetTransfer(address) {
 }
 
 async function verifyTweet(tweetId) {
-  const tweet = await client.v1.singleTweet(tweetId);
+  console.log(tweetId);
+  const tweet = await client.v1.singleTweet(tweetId).catch((e) => {
+    console.log(e);
+  });
   console.log("processing tweet", tweet.full_text);
   const ensRegex =
     /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;

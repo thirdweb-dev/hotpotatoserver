@@ -48,7 +48,7 @@ cron.schedule("* * * * 1", async () => {
   }
 });
 
-cron.schedule("* * * * * *", async () => {
+cron.schedule("1 * * * * *", async () => {
   console.log("Checking for new tweets");
   const query = await twitter.client.search("(hotpotatogg)").catch((e) => {
     console.log(e);
@@ -72,7 +72,8 @@ cron.schedule("* * * * * *", async () => {
         //console.log(tweet.user.screen_name);
         //db.addCheckedReply(tweet.id_str);
         db.addCheckedReply(tweet);
-        await twitter.verifyTweet(tweet);
+        console.log("Checked replies:", tweet);
+        await twitter.verifyTweet(tweet)
       })
       // })
       .catch((e) => console.log(e));
