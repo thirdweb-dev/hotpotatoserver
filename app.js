@@ -46,7 +46,7 @@ cron.schedule("* * * * 1", async () => {
   }
 });
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("* * * * 7", async () => {
   const query = await twitter.client.search("(to:hotpotatogg)");
   const checked = db.checkedReplies();
   const tweetIds = query.data.data.map((tweet) => tweet.id);
