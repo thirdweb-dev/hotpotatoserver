@@ -1,14 +1,21 @@
 const fs = require("fs");
 
-// stores wallet -> twitter handle
-const walletsFile = "./data/wallets.json";
-// stores current round + total transfer count + last timestamp for that round
-const gameStats = "./data/gameState.json";
-// folder to store the players for a given round
-const roundsInfoPaths = "./data/round_infos/";
+let dataFolder;
+if (process.env.ZEET) {
+  dataFolder = "/gameData/";
+} else {
+  dataFolder = "./data/";
+}
 
-if (!fs.existsSync("./data")) {
-  fs.mkdirSync("./data");
+// stores wallet -> twitter handle
+const walletsFile = dataFolder + "wallets.json";
+// stores current round + total transfer count + last timestamp for that round
+const gameStats = dataFolder + "gameState.json";
+// folder to store the players for a given round
+const roundsInfoPaths = dataFolder + "round_infos/";
+
+if (!fs.existsSync(dataFolder)) {
+  fs.mkdirSync(dataFolder);
 }
 
 if (!fs.existsSync(walletsFile)) {
