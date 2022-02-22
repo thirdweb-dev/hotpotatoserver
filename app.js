@@ -14,13 +14,12 @@ const MAX_TIME_MS = 24 * 60 * 60 * 1000;
 app.use(cors());
 
 // add transfer listener on the contract
-tw.nftContract.addTransferEventListener((from, to, tokenId) => {
+tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
   console.log("New Transfer!", from, to, tokenId);
   if (tokenId.toNumber() === db.currentRound()) {
     db.recordTransfer(to);
   }
-  // TODO send tweet and mention user
-  // twitter.tweetTransfer(to);
+  await twitter.tweetTransfer(to);
 });
 
 // check every minute for new replies
@@ -37,20 +36,20 @@ cron.schedule("* * * * *", async () => {
       const timePassed = Date.now() - lastTransferTime;
       console.log("Held the Potato for", utils.msToTime(timePassed));
       if (timePassed > MAX_TIME_MS) {
-        // TODO tweet the looser person saying it's their fault we lost
+        await twitter.tweetLoser(currentOwner);
         console.log("Round ended!");
         db.endGame();
       }
     }
-
-    // TODO fetch twitter responses, add to wallets db
-    //const query = await twitter.client.search("(to:hotpotatogg)");
-    //console.log(query);
-    // TODO: add new addresses to pool
-    // db.addWallet(query..., query....);
   } catch (e) {
     console.log(e);
   }
+});
+
+cron.schedule("* * * * *", async () => {
+  const query = await twitter.client.search("(to:hotpotatogg)");
+  console.log(query);
+  // TODO db.addWallet();
 });
 
 // ENDPOINTS

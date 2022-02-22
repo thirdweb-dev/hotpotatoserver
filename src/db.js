@@ -39,6 +39,10 @@ const wallets = () => {
   return JSON.parse(fs.readFileSync(walletsFile));
 };
 
+const fetchUsername = (address) => {
+  return wallets()[address];
+};
+
 let _gameState = JSON.parse(fs.readFileSync(gameStats));
 const gameState = () => {
   return _gameState;
@@ -123,4 +127,5 @@ module.exports = {
   addWallet,
   recordTransfer,
   endGame,
+  fetchUsername
 };
