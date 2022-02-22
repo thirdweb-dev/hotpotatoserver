@@ -63,7 +63,7 @@ cron.schedule("* * * * *", async () => {
 
     // tweets.forEach((tweet) => {
     tweetIds
-      .forEach((tweet) => {
+      .forEach(async (tweet) => {
         console.log(tweet.user.screen_name);
         //db.addCheckedReply(tweet.id_str);
         db.addCheckedReply(tweet);
