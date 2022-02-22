@@ -9,7 +9,7 @@ var cors = require("cors");
 const app = express();
 const port = 3000;
 
-const MAX_TIME_MS = 2 * 60 * 1000;
+const MAX_TIME_MS = 24 * 60 * 60 * 1000;
 
 app.use(cors());
 

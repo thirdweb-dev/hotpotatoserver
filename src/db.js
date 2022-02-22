@@ -76,7 +76,7 @@ const writeGameState = (state) => {
 const addWallet = (address, username) => {
   fs.writeFileSync(
     walletsFile,
-    JSON.stringify({ ...database(), [address]: username })
+    JSON.stringify({ ...wallets(), [address]: username })
   );
 };
 
