@@ -16,17 +16,20 @@ app.use(cors());
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener((from, to, tokenId) => {
   console.log("New Transfer!", from, to, tokenId);
-  // TODO check its the right token id
-  db.recordTransfer(to);
+  if (tokenId.toNumber() === db.currentRound()) {
+    db.recordTransfer(to);
+  }
   // TODO send tweet and mention user
+  // twitter.tweetTransfer(to);
 });
 
 // check every minute for new replies
 cron.schedule("* * * * *", async () => {
   try {
     // TODO use round number as the token ID
-    const currentOwner = (await tw.nftContract.get(0)).owner;
-    console.log("Current Potato owner", currentOwner);
+    const round = db.currentRound();
+    const currentOwner = (await tw.nftContract.get(round)).owner;
+    console.log(`Round: ${round} | Current Potato owner: ${currentOwner}`);
 
     // Check time since last transfer, end the game if more than 24h have passed
     const lastTransferTime = new Date(db.lastTransferTime()).getTime();

@@ -39,7 +39,7 @@ const gameState = () => {
 
 // the current round number
 const currentRound = () => {
-  return gameState()["current_round"];
+  return parseInt(gameState()["current_round"]);
 };
 // transfer Count for this round
 const transferCount = () => {
@@ -101,7 +101,7 @@ const recordTransfer = (address) => {
 
 const endGame = () => {
   writeGameState({
-    current_round: parseInt(currentRound()) + 1,
+    current_round: currentRound() + 1,
     transfer_count: 0,
     last_transfer_time: 0,
   });
