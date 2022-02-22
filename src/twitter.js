@@ -32,7 +32,7 @@ async function verifyTweet(tweetUrl) {
     let address = addresses[0];
     if (address.endsWith(".eth")) {
       address = await ethers
-        .getDefaultProvider(process.env.ALCHEMY || "homestead")
+        .getDefaultProvider(process.env.RPC_URL)
         .resolveName(address);
     }
     if (db.fetchUsername(address)) {
