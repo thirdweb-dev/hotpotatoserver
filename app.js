@@ -48,12 +48,16 @@ cron.schedule("* * * * 1", async () => {
   }
 });
 
-cron.schedule("* * * * *", async () => {
-  const query = await twitter.client.search("(hotpotatogg)");
+cron.schedule("* * * * * *", async () => {
+  console.log("Checking for new tweets");
+  const query = await twitter.client.search("(hotpotatogg)").catch((e) => {
+    console.log(e);
+  });
   const checked = db.checkedReplies();
   const tweetIds = query.data.data
     .map((tweet) => tweet.id)
     .filter((id) => !checked.includes(id));
+  console.log("New tweets:", tweetIds);
   if (tweetIds.length > 0) {
     console.log("New tweets!", tweetIds);
     // commented until we get elevated access
@@ -64,7 +68,8 @@ cron.schedule("* * * * *", async () => {
     // tweets.forEach((tweet) => {
     tweetIds
       .forEach(async (tweet) => {
-        console.log(tweet.user.screen_name);
+        console.log("New tweet!", tweet);
+        //console.log(tweet.user.screen_name);
         //db.addCheckedReply(tweet.id_str);
         db.addCheckedReply(tweet);
         await twitter.verifyTweet(tweet);
