@@ -2,6 +2,8 @@ const { TwitterApi } = require("twitter-api-v2");
 const client = new TwitterApi(process.env.TWITTER_BEARER);
 const db = require("./db");
 
+const landing = "https://hotpotato.vercel.app/";
+
 async function tweetTransfer(address) {
   const username = db.fetchUsername(address);
   try {
