@@ -49,6 +49,7 @@ cron.schedule("* * * * *", async () => {
 cron.schedule("* * * * *", async () => {
   const query = await twitter.client.search("(to:hotpotatogg)");
   console.log(query);
+  // TODO check for replied tweet ID
   // TODO db.addWallet();
 });
 
@@ -60,6 +61,22 @@ app.get("/", (req, res) => {
 
 app.get("/state", (req, res) => {
   res.json(db.gameState());
+});
+
+app.get("/exists", (req, res) => {
+  if (db.wallets()[req.query.address]) {
+    res.json({ exists: true });
+    return;
+  }
+  res.json({ exists: false });
+});
+
+app.get("/eligible", (req, res) => {
+  if (db.eligibleForTransfer(req.query.address)) {
+    res.json({ eligible: true });
+    return;
+  }
+  res.json({ eligible: false });
 });
 
 app.post("/import", (req, res) => {

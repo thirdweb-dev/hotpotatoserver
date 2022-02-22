@@ -75,6 +75,11 @@ const currentPlayers = () => {
   return JSON.parse(fs.readFileSync(file));
 };
 
+const eligibleForTransfer = (address) => {
+  const players = currentPlayers();
+  return !players.includes(address);
+};
+
 const writeGameState = (state) => {
   _gameState = {
     ...gameState(),
@@ -127,5 +132,6 @@ module.exports = {
   addWallet,
   recordTransfer,
   endGame,
-  fetchUsername
+  fetchUsername,
+  eligibleForTransfer
 };
