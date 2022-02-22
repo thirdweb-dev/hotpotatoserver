@@ -41,7 +41,7 @@ async function extractAddressAndRecordUser(text, username) {
     addresses = text.match(regex) || [];
   }
   if (addresses.length == 0) {
-    console.log("No address found");
+    console.log("No address found", text);
     return;
   }
 
