@@ -8,15 +8,15 @@ const client = new TwitterApi({
 const db = require("./db");
 const { ethers } = require("ethers");
 
-const landing = "https://hotpotato.vercel.app/";
+const landing = "https://hot-potato.xyz/";
 
 async function tweetTransfer(address) {
-  const username = db.fetchUsername(address);
   try {
+    const username = db.fetchUsername(address);
     await client.v1.tweet(
-      `The 🔥🥔 NFT has been transferred to ${
+      `The 🔥🥔 NFT has been passed to ${
         username ? "@" + username : address
-      }\n\nYou have 24h to pass the 🔥🥔 NFT to another address.\n\nJoin the Hot Potato NFT game: ${landing}`
+      }\n\nThey have 24 hours to pass the 🔥🥔 NFT!\n\nJoin the 🔥🥔 game 👇 ${landing}`
     );
   } catch (e) {
     console.log(e);
@@ -66,12 +66,12 @@ async function extractAddressAndRecordUser(text, username) {
 }
 
 async function tweetLoser(address) {
-  const username = db.fetchUsername(address);
   try {
+    const username = db.fetchUsername(address);
     await client.v1.tweet(
-      `The 🔥🥔 NFT blasted because ${
+      `The 🔥🥔 has been dropped by ${
         username ? "@" + username : address
-      } failed to transfer it in time. New round will start soon!\n\nJoin the Hot Potato NFT game: ${landing}`
+      }\n\nShame. Shame. Shame. 😢\n\nNew round starts now. \n\nJoin the 🔥🥔  NFT game 👇 ${landing}`
     );
   } catch (e) {
     console.log(e);

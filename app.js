@@ -124,6 +124,14 @@ app.get("/eligible", (req, res) => {
   res.json({ eligible: false });
 });
 
+app.get("/hasplayed", (req, res) => {
+  if (db.hasAlreadyPlayed(req.query.address)) {
+    res.json({ played: true });
+    return;
+  }
+  res.json({ played: false });
+});
+
 app.post("/import", (req, res) => {
   // TODO read body
   // TODO write to disk

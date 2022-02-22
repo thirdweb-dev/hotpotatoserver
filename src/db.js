@@ -96,6 +96,11 @@ const eligibleForTransfer = (address) => {
   return !players.includes(address);
 };
 
+const hasAlreadyPlayed = (address) => {
+  const players = currentPlayers();
+  return players.includes(address);
+};
+
 const writeGameState = (state) => {
   _gameState = {
     ...gameState(),
@@ -151,6 +156,7 @@ module.exports = {
   endGame,
   fetchUsername,
   eligibleForTransfer,
+  hasAlreadyPlayed,
   checkedReplies,
   addCheckedReply,
 };
