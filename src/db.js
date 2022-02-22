@@ -147,9 +147,10 @@ module.exports = {
   gameState,
   addWallet,
   recordTransfer,
+  transferCount,
   endGame,
   fetchUsername,
   eligibleForTransfer,
   checkedReplies,
-  addCheckedReply
+  addCheckedReply,
 };
