@@ -41,27 +41,28 @@ async function extractAddressAndRecordUser(text, username) {
     addresses = text.match(regex) || [];
   }
   if (addresses.length == 0) {
-    throw new Error("No address found");
-  } else {
-    let address = addresses[0];
-    if (address.endsWith(".eth")) {
-      address = await ethers
-        .getDefaultProvider(process.env.MAINNET_RPC_URL)
-        .resolveName(address);
-    }
-    if (!ethers.utils.isAddress(address)) {
-      console.log("Invalid address");
-      return;
-    }
-
-    if (db.fetchUsername(address)) {
-      console.log("Address already verified");
-      return;
-    }
-
-    console.log("Added new player", username, address);
-    db.addWallet(address, username);
+    console.log("No address found");
+    return;
   }
+
+  let address = addresses[0];
+  if (address.endsWith(".eth")) {
+    address = await ethers
+      .getDefaultProvider(process.env.MAINNET_RPC_URL)
+      .resolveName(address);
+  }
+  if (!ethers.utils.isAddress(address)) {
+    console.log("Invalid address");
+    return;
+  }
+
+  if (db.fetchUsername(address)) {
+    console.log("Address already verified");
+    return;
+  }
+
+  console.log("Added new player", username, address);
+  db.addWallet(address, username);
 }
 
 async function tweetLoser(address) {
