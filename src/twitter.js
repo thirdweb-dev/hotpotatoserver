@@ -17,7 +17,7 @@ async function tweetTransfer(address) {
 }
 
 async function verifyTweet(tweetUrl) {
-  const tweetId = tweetUrl.split("/")[-1].split('?')[0]
+  const tweetId = tweetUrl.split("/")[-1].split("?")[0];
   const tweet = await client.v1.singleTweet(tweetId);
   const ensRegex =
     /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
@@ -34,6 +34,9 @@ async function verifyTweet(tweetUrl) {
       address = await ethers
         .getDefaultProvider(process.env.RPC_URL)
         .resolveName(address);
+    }
+    if (!ethers.utils.isAddress(address)) {
+      throw new Error("Invalid address");
     }
     if (db.fetchUsername(address)) {
       throw new Error("Address already verified");
