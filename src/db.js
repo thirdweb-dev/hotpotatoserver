@@ -31,9 +31,12 @@ if (!fs.existsSync(roundsInfoPaths)) {
 const wallets = () => {
   return JSON.parse(fs.readFileSync(walletsFile));
 };
+
+let _gameState = JSON.parse(fs.readFileSync(gameStats));
 const gameState = () => {
-  return JSON.parse(fs.readFileSync(gameStats));
+  return _gameState;
 };
+
 // the current round number
 const currentRound = () => {
   return gameState()["current_round"];
@@ -61,15 +64,12 @@ const currentPlayers = () => {
   return JSON.parse(fs.readFileSync(file));
 };
 
-const writeTransferCount = (count) => {
-  fs.writeFileSync(
-    gameStats,
-    JSON.stringify({
-      ...gameState(),
-      transfer_count: count,
-      last_transfer_time: new Date().toISOString(),
-    })
-  );
+const writeGameState = (state) => {
+  _gameState = {
+    ...gameState(),
+    ...state,
+  };
+  fs.writeFileSync(gameStats, JSON.stringify(_gameState));
 };
 
 // add new wallet to the address pool
@@ -93,7 +93,10 @@ const recordTransfer = (address) => {
 
   // increment transfer count
   const currentTransferCount = transferCount();
-  writeTransferCount(currentTransferCount + 1);
+  writeGameState({
+    transfer_count: currentTransferCount + 1,
+    last_transfer_time: new Date().toISOString(),
+  });
 };
 
 module.exports = {
