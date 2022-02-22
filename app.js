@@ -1,4 +1,5 @@
 require("dotenv").config();
+const bodyParser = require("body-parser");
 const tw = require("./src/thirdweb");
 const twitter = require("./src/twitter");
 const db = require("./src/db");
@@ -12,6 +13,7 @@ const port = 3000;
 const MAX_TIME_MS = 24 * 60 * 60 * 1000;
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
@@ -68,10 +70,11 @@ app.post("/import", (req, res) => {
 });
 
 app.post("/addwallet", async (req, res) => {
-  const { tweet } = req.body;
-  console.log(tweet);
+  console.log(req.body);
   try {
-    await twitter.verifyTweet(tweet);
+    const id = req.body.tweetId;
+    console.log(id);
+    await twitter.verifyTweet(id);
     res.json({ success: true });
   } catch (e) {
     res.json({ success: false, reason: e.message });

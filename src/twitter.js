@@ -1,5 +1,8 @@
 const { TwitterApi } = require("twitter-api-v2");
-const client = new TwitterApi(process.env.TWITTER_BEARER);
+const client = new TwitterApi({
+  appKey: process.env.TWITTER_API_KEY,
+  appSecret: process.env.TWITTER_API_SECRET,
+});
 const db = require("./db");
 const { ethers } = require("ethers");
 
@@ -16,15 +19,15 @@ async function tweetTransfer(address) {
   }
 }
 
-async function verifyTweet(tweetUrl) {
-  const tweetId = tweetUrl.split("/")[-1].split("?")[0];
+async function verifyTweet(tweetId) {
   const tweet = await client.v1.singleTweet(tweetId);
+  console.log("processing tweet", tweet.full_text);
   const ensRegex =
     /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
-  let addresses = tweet.match(ensRegex) || [];
+  let addresses = tweet.full_text.match(ensRegex) || [];
   if (addresses.length == 0) {
     const regex = /0x[a-fA-F0-9]{40}/;
-    addresses = tweet.match(regex) || [];
+    addresses = tweet.full_text.match(regex) || [];
   }
   if (addresses.length == 0) {
     throw new Error("No address found");
@@ -32,7 +35,7 @@ async function verifyTweet(tweetUrl) {
     let address = addresses[0];
     if (address.endsWith(".eth")) {
       address = await ethers
-        .getDefaultProvider(process.env.RPC_URL)
+        .getDefaultProvider(process.env.MAINNET_RPC_URL)
         .resolveName(address);
     }
     if (!ethers.utils.isAddress(address)) {
