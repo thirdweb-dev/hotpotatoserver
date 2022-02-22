@@ -3,7 +3,9 @@ const tw = require("./src/thirdweb");
 const twitter = require("./src/twitter");
 const db = require("./src/db");
 var cron = require("node-cron");
-const server = require("./src/server");
+const express = require("express");
+const app = express();
+const port = 3000;
 
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener((from, to, tokenId) => {
@@ -25,4 +27,23 @@ cron.schedule("* * * * *", async () => {
   } catch (e) {
     console.log(e);
   }
+});
+
+// ENDPOINTS
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.get("/state", (req, res) => {
+  res.json(db.gameState());
+});
+
+app.post("/import", (req, res) => {
+  // TODO read body
+  // TODO write to disk
+});
+
+app.listen(3000, () => {
+  console.log("server running on 3000");
 });
