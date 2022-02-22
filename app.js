@@ -49,10 +49,11 @@ cron.schedule("* * * * 1", async () => {
 });
 
 cron.schedule("* * * * 7", async () => {
-  const query = await twitter.client.search("(to:hotpotatogg)");
+  const query = await twitter.client.search("(hotpotatogg)");
   const checked = db.checkedReplies();
-  const tweetIds = query.data.data.map((tweet) => tweet.id);
-  //.filter((id) => !checked.includes(id));
+  const tweetIds = query.data.data
+    .map((tweet) => tweet.id)
+    .filter((id) => !checked.includes(id));
   if (tweetIds.length > 0) {
     console.log("New tweets!", tweetIds);
     // commented until we get elevated access
@@ -66,8 +67,7 @@ cron.schedule("* * * * 7", async () => {
         console.log(tweet.user.screen_name);
         //db.addCheckedReply(tweet.id_str);
         db.addCheckedReply(tweet);
-        // needs to merge: https://github.com/thirdweb-dev/hotpotatoserver/pull/1
-        //await db.verifyTweet(tweet.user.screen_name, tweet.id_str);
+        await twitter.verifyTweet(tweet);
       })
       // })
       .catch((e) => console.log(e));
