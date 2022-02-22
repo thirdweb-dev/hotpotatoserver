@@ -7,6 +7,7 @@ const utils = require("./src/utils");
 var cron = require("node-cron");
 const express = require("express");
 var cors = require("cors");
+const e = require("express");
 const app = express();
 const port = 3000;
 
@@ -88,6 +89,25 @@ app.get("/", (req, res) => {
 
 app.get("/state", (req, res) => {
   res.json(db.gameState());
+});
+
+app.get("/potatonft", (req, res) => {
+  const transferCount = db.transferCount();
+  const lastTransferTime = db.lastTransferTime();
+  let image;
+  if (lastTransferTime == 0) {
+    // game ended or not started
+    image = "img/cold-potato.gif";
+  } else {
+    if (transferCount < 50) {
+      image = "img/hotpotato1.gif";
+    } else if (transferCount < 100) {
+      image = "img/hotpotato2.gif";
+    } else if (transferCount < 500) {
+      image = "img/hotpotato3.gif";
+    }
+  }
+  res.sendFile(image, { root: __dirname });
 });
 
 app.get("/exists", (req, res) => {
