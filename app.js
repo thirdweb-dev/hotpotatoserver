@@ -25,8 +25,7 @@ tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
   await twitter.tweetTransfer(to);
 });
 
-// check every minute for new replies
-cron.schedule("* * * * 1", async () => {
+const checkForEndOfRound = async () => {
   try {
     // TODO use round number as the token ID
     const round = db.currentRound();
@@ -47,40 +46,36 @@ cron.schedule("* * * * 1", async () => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-
-cron.schedule("1 * * * * *", async () => {
-  console.log("Checking for new tweets");
-  const query = await twitter.client.search("(hotpotatogg)").catch((e) => {
+const searchForTweets = async () => {
+  try {
+    console.log("Checking for new tweets");
+    const query = await twitter.client.v1.mentionTimeline();
+    if (query.tweets.length > 0) {
+      query.tweets.forEach(async (tweet) => {
+        try {
+          if (!db.checkedReplies().includes(tweet.id)) {
+            db.addCheckedReply(tweet.id);
+            twitter.extractAddressAndRecordUser(
+              tweet.full_text,
+              tweet.user.screen_name
+            );
+          }
+        } catch (e) {
+          console.log("Error extracting address from", tweet.full_text);
+        }
+      });
+    }
+  } catch (e) {
     console.log(e);
-  });
-  const checked = db.checkedReplies();
-  const tweetIds = query.data.data
-    .map((tweet) => tweet.id)
-    .filter((id) => !checked.includes(id));
-  console.log("New tweets:", tweetIds);
-  if (tweetIds.length > 0) {
-    console.log("New tweets!", tweetIds);
-    // commented until we get elevated access
-    // const tweets = await twitter.client.v1
-    //   .tweets(tweetIds)
-    //   .then((tweets) => {
-
-    // tweets.forEach((tweet) => {
-    tweetIds
-      .forEach(async (tweet) => {
-        console.log("New tweet!", tweet);
-        //console.log(tweet.user.screen_name);
-        //db.addCheckedReply(tweet.id_str);
-        db.addCheckedReply(tweet);
-        console.log("Checked replies:", tweet);
-        await twitter.verifyTweet(tweet)
-      })
-      // })
-      .catch((e) => console.log(e));
-    console.log(tweetIds);
   }
+};
+
+// Do work every minute
+cron.schedule("* * * * *", async () => {
+  checkForEndOfRound();
+  searchForTweets();
 });
 
 // ENDPOINTS
@@ -109,6 +104,7 @@ app.get("/potatonft", (req, res) => {
       image = "img/hotpotato3.gif";
     }
   }
+  res.set("Cache-control", "public, max-age=300");
   res.sendFile(image, { root: __dirname });
 });
 
