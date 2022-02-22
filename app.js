@@ -2,11 +2,14 @@ require("dotenv").config();
 const tw = require("./src/thirdweb");
 const twitter = require("./src/twitter");
 const db = require("./src/db");
+const utils = require("./src/utils");
 var cron = require("node-cron");
 const express = require("express");
 var cors = require("cors");
 const app = express();
 const port = 3000;
+
+const MAX_TIME_MS = 2 * 60 * 1000;
 
 app.use(cors());
 
@@ -21,8 +24,23 @@ tw.nftContract.addTransferEventListener((from, to, tokenId) => {
 // check every minute for new replies
 cron.schedule("* * * * *", async () => {
   try {
-    const nft = await tw.nftContract.get(0);
-    console.log("CRON TIME", nft);
+    // TODO use round number as the token ID
+    const currentOwner = (await tw.nftContract.get(0)).owner;
+    console.log("Current Potato owner", currentOwner);
+
+    // Check time since last transfer, end the game if more than 24h have passed
+    const lastTransferTime = new Date(db.lastTransferTime()).getTime();
+    if (lastTransferTime > 0) {
+      const timePassed = Date.now() - lastTransferTime;
+      console.log("Held the Potato for", utils.msToTime(timePassed));
+      if (timePassed > MAX_TIME_MS) {
+        // TODO tweet the looser person saying it's their fault we lost
+        console.log("Round ended!");
+        db.endGame();
+      }
+    }
+
+    // TODO fetch twitter responses, add to wallets db
     //const query = await twitter.client.search("(to:hotpotatogg)");
     //console.log(query);
     // TODO: add new addresses to pool

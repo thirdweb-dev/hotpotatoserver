@@ -99,6 +99,14 @@ const recordTransfer = (address) => {
   });
 };
 
+const endGame = () => {
+  writeGameState({
+    current_round: parseInt(currentRound()) + 1,
+    transfer_count: 0,
+    last_transfer_time: 0,
+  });
+};
+
 module.exports = {
   wallets,
   currentRound,
@@ -107,4 +115,5 @@ module.exports = {
   gameState,
   addWallet,
   recordTransfer,
+  endGame,
 };
