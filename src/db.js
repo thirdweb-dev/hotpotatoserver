@@ -13,6 +13,7 @@ const walletsFile = dataFolder + "wallets.json";
 const gameStats = dataFolder + "gameState.json";
 // folder to store the players for a given round
 const roundsInfoPaths = dataFolder + "round_infos/";
+const repliesCheckedFile = dataFolder + "checked.json";
 
 if (!fs.existsSync(dataFolder)) {
   fs.mkdirSync(dataFolder);
@@ -21,6 +22,11 @@ if (!fs.existsSync(dataFolder)) {
 if (!fs.existsSync(walletsFile)) {
   fs.writeFileSync(walletsFile, JSON.stringify({}));
 }
+
+if (!fs.existsSync(repliesCheckedFile)) {
+  fs.writeFileSync(repliesCheckedFile, JSON.stringify([]));
+}
+
 if (!fs.existsSync(gameStats)) {
   fs.writeFileSync(
     gameStats,
@@ -41,6 +47,16 @@ const wallets = () => {
 
 const fetchUsername = (address) => {
   return wallets()[address];
+};
+
+const checkedReplies = () => {
+  return JSON.parse(fs.readFileSync(repliesCheckedFile));
+};
+
+const addCheckedReply = (id) => {
+  const checked = checkedReplies();
+  checked.push(id);
+  fs.writeFileSync(repliesCheckedFile, JSON.stringify(checked));
 };
 
 let _gameState = JSON.parse(fs.readFileSync(gameStats));
@@ -133,5 +149,7 @@ module.exports = {
   recordTransfer,
   endGame,
   fetchUsername,
-  eligibleForTransfer
+  eligibleForTransfer,
+  checkedReplies,
+  addCheckedReply
 };

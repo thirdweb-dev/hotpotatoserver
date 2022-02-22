@@ -23,7 +23,7 @@ tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
 });
 
 // check every minute for new replies
-cron.schedule("* * * * *", async () => {
+cron.schedule("* * * * 1", async () => {
   try {
     // TODO use round number as the token ID
     const round = db.currentRound();
@@ -48,9 +48,29 @@ cron.schedule("* * * * *", async () => {
 
 cron.schedule("* * * * *", async () => {
   const query = await twitter.client.search("(to:hotpotatogg)");
-  console.log(query);
-  // TODO check for replied tweet ID
-  // TODO db.addWallet();
+  const checked = db.checkedReplies();
+  const tweetIds = query.data.data.map((tweet) => tweet.id);
+  //.filter((id) => !checked.includes(id));
+  if (tweetIds.length > 0) {
+    console.log("New tweets!", tweetIds);
+    // commented until we get elevated access
+    // const tweets = await twitter.client.v1
+    //   .tweets(tweetIds)
+    //   .then((tweets) => {
+
+    // tweets.forEach((tweet) => {
+    tweetIds
+      .forEach((tweet) => {
+        console.log(tweet.user.screen_name);
+        //db.addCheckedReply(tweet.id_str);
+        db.addCheckedReply(tweet);
+        // needs to merge: https://github.com/thirdweb-dev/hotpotatoserver/pull/1
+        //await db.verifyTweet(tweet.user.screen_name, tweet.id_str);
+      })
+      // })
+      .catch((e) => console.log(e));
+    console.log(tweets);
+  }
 });
 
 // ENDPOINTS
