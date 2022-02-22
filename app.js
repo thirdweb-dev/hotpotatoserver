@@ -49,7 +49,7 @@ cron.schedule("* * * * 1", async () => {
   }
 });
 
-cron.schedule("* * * * * *", async () => {
+cron.schedule("* * * * 5", async () => {
   console.log("Checking for new tweets");
   const query = await twitter.client.search("(hotpotatogg)").catch((e) => {
     console.log(e);
