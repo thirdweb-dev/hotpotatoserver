@@ -67,6 +67,17 @@ app.post("/import", (req, res) => {
   // TODO write to disk
 });
 
+app.post("/addwallet", async (req, res) => {
+  const { tweet } = req.body;
+  console.log(tweet);
+  try {
+    await twitter.verifyTweet(tweet);
+    res.json({ success: true });
+  } catch (e) {
+    res.json({ success: false, reason: e.message });
+  }
+});
+
 app.listen(port, () => {
   console.log("server running on 3000");
 });
