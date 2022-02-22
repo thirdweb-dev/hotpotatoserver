@@ -4,8 +4,11 @@ const twitter = require("./src/twitter");
 const db = require("./src/db");
 var cron = require("node-cron");
 const express = require("express");
+var cors = require("cors");
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener((from, to, tokenId) => {
@@ -44,6 +47,6 @@ app.post("/import", (req, res) => {
   // TODO write to disk
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log("server running on 3000");
 });
