@@ -88,6 +88,10 @@ app.get("/state", (req, res) => {
   res.json(db.gameState());
 });
 
+app.get("/players", (req, res) => {
+  res.json(db.currentPlayers());
+});
+
 app.get("/potatonft", (req, res) => {
   const transferCount = db.transferCount();
   const lastTransferTime = db.lastTransferTime();
