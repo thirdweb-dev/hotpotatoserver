@@ -93,12 +93,14 @@ const currentPlayers = () => {
 
 const eligibleForTransfer = (address) => {
   const players = currentPlayers();
-  return !players.includes(address);
+  //return !players.includes(address);
+  return players.filter((player) => player.address === address).length === 0;
 };
 
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
-  return players.includes(address);
+  // return players.includes(address);
+  return players.filter((player) => player.address === address).length > 0;
 };
 
 const writeGameState = (state) => {
@@ -122,10 +124,18 @@ const recordTransfer = (address) => {
   // record player address if not already
   const owners = currentPlayers();
   // if already played this round, ignore
-  if (owners.includes(address)) {
+  // if (owners.includes(address)) {
+  //   return;
+  // }
+  if (owners.filter((owner) => owner.address === address).length > 0) {
     return;
   }
-  owners.push(address);
+  // owners.push(address);
+  owners.push({
+    address,
+    timestamp: Date.now(),
+  });
+
   fs.writeFileSync(currentPlayersFile(), JSON.stringify(owners));
 
   // increment transfer count
