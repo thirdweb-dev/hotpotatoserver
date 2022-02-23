@@ -78,7 +78,7 @@ const lastTransferTime = () => {
 
 const currentPlayersFile = () => {
   const round = currentRound();
-  const file = roundsInfoPaths + round + ".json";
+  const file = roundsInfoPaths + round + "WithTimestamp.json";
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify([]));
   }
