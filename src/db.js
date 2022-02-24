@@ -97,7 +97,6 @@ const playerState = async (address) => {
   const eligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
   const registered = hasRegistered(address);
-  console.log(currentRound());
   const isOwner =
     (await nftContract.get(currentRound())).owner.toLowerCase() ===
     address.toLowerCase();
@@ -112,7 +111,6 @@ const playerState = async (address) => {
 
 const eligibleForTransfer = (address) => {
   const players = currentPlayers();
-  //return !players.includes(address);
   return (
     players.filter(
       (player) => player.addresstoLowerCase() === address.toLowerCase()
@@ -122,7 +120,6 @@ const eligibleForTransfer = (address) => {
 
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
-  // return players.includes(address);
   return (
     players.filter(
       (player) => player.address.toLowerCase() === address.toLowerCase()
@@ -155,14 +152,10 @@ const addWallet = (address, username) => {
 const recordTransfer = (address) => {
   // record player address if not already
   const owners = currentPlayers();
-  // if already played this round, ignore
-  // if (owners.includes(address)) {
-  //   return;
-  // }
+
   if (owners.filter((owner) => owner.address === address).length > 0) {
     return;
   }
-  // owners.push(address);
   owners.push({
     address,
     timestamp: new Date().toISOString(),
