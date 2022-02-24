@@ -118,6 +118,18 @@ const eligibleForTransfer = (address) => {
   );
 };
 
+const eligibleWallets = () => {
+  const walletList= Object.keys(wallets());
+  const eligible = walletList.filter((walletList) => eligibleForTransfer(walletList));
+  return eligible;
+};
+
+const randomWallet = () => {
+  const eligible = eligibleWallets();
+  const random = Math.floor(Math.random() * eligible.length);
+  return eligible[random];
+};
+
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
   return (
@@ -211,4 +223,6 @@ module.exports = {
   checkedReplies,
   addCheckedReply,
   playerState,
+  eligibleWallets,
+  randomWallet
 };

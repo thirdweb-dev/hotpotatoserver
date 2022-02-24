@@ -180,6 +180,11 @@ app.post("/addwallet", async (req, res) => {
   }
 });
 
+app.get("/randomwallet", (req, res) => {
+  const address = db.randomWallet();
+  res.json({ address });
+});
+
 app.get("/playerState", async (req, res) => {
   const address = req.query.address;
   const player = await db.playerState(address);
