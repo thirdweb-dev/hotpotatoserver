@@ -133,7 +133,7 @@ const recordTransfer = (address) => {
   // owners.push(address);
   owners.push({
     address,
-    timestamp: Date.now(),
+    timestamp: new Date().toISOString(),
   });
 
   fs.writeFileSync(currentPlayersFile(), JSON.stringify(owners));
