@@ -27,13 +27,16 @@ tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
 
 const checkForEndOfRound = async () => {
   try {
+    const round = db.currentRound();
     const currentOwner = (await tw.nftContract.get(round)).owner;
     // Check time since last transfer, end the game if more than 24h have passed
     const lastTransferTime = new Date(db.lastTransferTime()).getTime();
     if (lastTransferTime > 0) {
       const timePassed = Date.now() - lastTransferTime;
       console.log(
-        `${currentOwner} Held the Potato for ${utils.msToTime(timePassed)}`
+        `Round ${round} | ${currentOwner} Held the Potato for ${utils.msToTime(
+          timePassed
+        )}`
       );
       if (timePassed > MAX_TIME_MS) {
         await twitter.tweetLoser(currentOwner);
