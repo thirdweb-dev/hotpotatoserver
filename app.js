@@ -125,7 +125,7 @@ app.get("/image/:token", (req, res) => {
   const token = req.params.token;
   const currentRound = db.currentRound();
   let image;
-  if (token == currentRound) {
+  if (token == currentRound.toString()) {
     image = getActiveNFT();
   } else {
     image = "img/cold-potato.gif";
