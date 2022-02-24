@@ -181,8 +181,12 @@ app.post("/addwallet", async (req, res) => {
 });
 
 app.get("/randomwallet", (req, res) => {
-  const address = db.randomWallet();
-  res.json({ address });
+  try {
+    const address = db.randomWallet();
+    res.json({ address });
+  } catch (e) {
+    res.sendStatus(404);
+  }
 });
 
 app.get("/playerState", async (req, res) => {
