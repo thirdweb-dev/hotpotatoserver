@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
-  console.log("New Transfer!", from, to, tokenId);
+  console.log("New Transfer from SDK event!", from, to, tokenId.toNumber());
   if (tokenId.toNumber() === db.currentRound()) {
     db.recordTransfer(from, to);
   }
@@ -27,16 +27,14 @@ tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
 
 const checkForEndOfRound = async () => {
   try {
-    // TODO use round number as the token ID
-    const round = db.currentRound();
     const currentOwner = (await tw.nftContract.get(round)).owner;
-    console.log(`Round: ${round} | Current Potato owner: ${currentOwner}`);
-
     // Check time since last transfer, end the game if more than 24h have passed
     const lastTransferTime = new Date(db.lastTransferTime()).getTime();
     if (lastTransferTime > 0) {
       const timePassed = Date.now() - lastTransferTime;
-      console.log("Held the Potato for", utils.msToTime(timePassed));
+      console.log(
+        `${currentOwner} Held the Potato for ${utils.msToTime(timePassed)}`
+      );
       if (timePassed > MAX_TIME_MS) {
         await twitter.tweetLoser(currentOwner);
         console.log("Round ended!");
@@ -76,6 +74,18 @@ const searchForTweets = async () => {
 cron.schedule("* * * * *", async () => {
   checkForEndOfRound();
   searchForTweets();
+});
+
+cron.schedule("*/10 * * * * *", async () => {
+  const round = db.currentRound();
+  const currentOwner = (await tw.nftContract.get(round)).owner;
+  const lastOwner = db.lastOwner();
+  if (currentOwner !== lastOwner) {
+    console.log(
+      `Round ${round} | New Transfer detected, recording transfer from ${lastOwner} to ${currentOwner}`
+    );
+    db.recordTransfer(lastOwner, currentOwner);
+  }
 });
 
 // ENDPOINTS

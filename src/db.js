@@ -119,8 +119,10 @@ const eligibleForTransfer = (address) => {
 };
 
 const eligibleWallets = () => {
-  const walletList= Object.keys(wallets());
-  const eligible = walletList.filter((walletList) => eligibleForTransfer(walletList));
+  const walletList = Object.keys(wallets());
+  const eligible = walletList.filter((walletList) =>
+    eligibleForTransfer(walletList)
+  );
   return eligible;
 };
 
@@ -142,6 +144,13 @@ const hasAlreadyPlayed = (address) => {
 const hasRegistered = (address) => {
   const walletList = wallets();
   return walletList[ethers.utils.getAddress(address)] !== undefined;
+};
+
+const lastOwner = () => {
+  if (currentPlayers().length === 0) {
+    return undefined;
+  }
+  return currentPlayers()[currentPlayers().length - 1].address;
 };
 
 const writeGameState = (state) => {
@@ -166,7 +175,6 @@ const recordTransfer = (from, to) => {
   const owners = currentPlayers();
 
   // if already played this round, ignore
-
   if (owners.filter((owner) => owner.address === to).length > 0) {
     return;
   }
@@ -209,6 +217,7 @@ const endGame = () => {
 
 module.exports = {
   wallets,
+  lastOwner,
   currentRound,
   currentPlayers,
   lastTransferTime,
@@ -224,5 +233,5 @@ module.exports = {
   addCheckedReply,
   playerState,
   eligibleWallets,
-  randomWallet
+  randomWallet,
 };
