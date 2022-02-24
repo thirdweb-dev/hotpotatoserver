@@ -103,7 +103,6 @@ const getActiveNFT = () => {
   if (lastTransferTime == 0) {
     // game ended or not started
     image = "img/cold-potato.gif";
-    console.log("No Potato");
   } else {
     if (transferCount < 50) {
       image = "img/hotpotato1.gif";
@@ -130,7 +129,6 @@ app.get("/image/:token", (req, res) => {
     image = getActiveNFT();
     res.set("Cache-control", "public, max-age=300");
   } else {
-    console.log(token, currentRound);
     image = "img/cold-potato.gif";
     if (token > currentRound) {
       res.set("Cache-control", "public, max-age=300");
