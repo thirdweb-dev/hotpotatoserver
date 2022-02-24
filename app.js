@@ -153,6 +153,12 @@ app.post("/addwallet", async (req, res) => {
   }
 });
 
+app.get("/playerState", async (req, res) => {
+  const address = req.query.address;
+  const player = db.playerState(address);
+  res.json(player);
+})
+
 app.listen(port, () => {
   console.log("server running on 3000");
 });
