@@ -113,7 +113,7 @@ const eligibleForTransfer = (address) => {
   const players = currentPlayers();
   return (
     players.filter(
-      (player) => player.addresstoLowerCase() === address.toLowerCase()
+      (player) => player.address.toLowerCase() === address.toLowerCase()
     ).length === 0 && wallets()[address] !== undefined
   );
 
