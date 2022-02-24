@@ -96,7 +96,7 @@ app.get("/players", (req, res) => {
   res.json(playersWithTwitterHandles);
 });
 
-app.get("/potatonft", (req, res) => {
+const getActiveNFT = () => {
   const transferCount = db.transferCount();
   const lastTransferTime = db.lastTransferTime();
   let image;
@@ -112,7 +112,30 @@ app.get("/potatonft", (req, res) => {
       image = "img/hotpotato3.gif";
     }
   }
+  return image;
+};
+
+app.get("/potatonft", (req, res) => {
+  const image = getActiveNFT();
   res.set("Cache-control", "public, max-age=300");
+  res.sendFile(image, { root: __dirname });
+});
+
+app.get("/image/:token", (req, res) => {
+  const token = parseInt(req.params.token);
+  const currentRound = db.currentRound();
+  let image;
+  if (token == currentRound) {
+    image = getActiveNFT();
+    res.set("Cache-control", "public, max-age=300");
+  } else {
+    image = "img/cold-potato.gif";
+    if (token > currentRound) {
+      res.set("Cache-control", "public, max-age=300");
+    } else {
+      res.set("Cache-control", "public, max-age=31536000");
+    }
+  }
   res.sendFile(image, { root: __dirname });
 });
 
@@ -161,7 +184,7 @@ app.get("/playerState", async (req, res) => {
   const address = req.query.address;
   const player = await db.playerState(address);
   res.json(player);
-})
+});
 
 app.listen(port, () => {
   console.log("server running on 3000");
