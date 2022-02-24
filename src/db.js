@@ -91,12 +91,12 @@ const currentPlayers = () => {
   return JSON.parse(fs.readFileSync(file));
 };
 
-const playerState = (address) => {
+const playerState = async (address) => {
   const played = hasAlreadyPlayed(address);
   const eligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
   const registered = hasRegistered(address);
-  const isOwner = nftContract.ownerOf(currentRound()) === address;
+  const isOwner = (await nftContract.ownerOf(currentRound())) === address;
   return {
     played,
     eligible,
@@ -189,4 +189,5 @@ module.exports = {
   hasAlreadyPlayed,
   checkedReplies,
   addCheckedReply,
+  playerState,
 };
