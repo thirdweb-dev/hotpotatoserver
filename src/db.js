@@ -1,5 +1,6 @@
+const { ethers } = require("ethers");
 const fs = require("fs");
-
+const { nftContract } = require("./thirdweb");
 let dataFolder;
 if (process.env.ZEET) {
   dataFolder = "/gameData/";
@@ -46,7 +47,7 @@ const wallets = () => {
 };
 
 const fetchUsername = (address) => {
-  return wallets()[address];
+  return wallets()[ethers.utils.getAddress(address)];
 };
 
 const checkedReplies = () => {
@@ -91,14 +92,46 @@ const currentPlayers = () => {
   return JSON.parse(fs.readFileSync(file));
 };
 
+const playerState = async (address) => {
+  const played = hasAlreadyPlayed(address);
+  const eligible = eligibleForTransfer(address);
+  const username = fetchUsername(address);
+  const registered = hasRegistered(address);
+  const isOwner =
+    (await nftContract.get(currentRound())).owner.toLowerCase() ===
+    address.toLowerCase();
+  return {
+    played,
+    eligible,
+    username,
+    registered,
+    isOwner,
+  };
+};
+
 const eligibleForTransfer = (address) => {
   const players = currentPlayers();
-  return players.filter((player) => player.address === address).length === 0;
+  return (
+    players.filter(
+      (player) => player.addresstoLowerCase() === address.toLowerCase()
+    ).length === 0 && wallets()[address] !== undefined
+  );
+
 };
 
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
-  return players.filter((player) => player.address === address).length > 0;
+  return (
+    players.filter(
+      (player) => player.address.toLowerCase() === address.toLowerCase()
+    ).length > 0
+  );
+};
+
+const hasRegistered = (address) => {
+  const walletList = wallets();
+  return walletList[ethers.utils.getAddress(address)] !== undefined;
+
 };
 
 const writeGameState = (state) => {
@@ -123,6 +156,7 @@ const recordTransfer = (from, to) => {
   const owners = currentPlayers();
 
   // if already played this round, ignore
+
   if (owners.filter((owner) => owner.address === to).length > 0) {
     return;
   }
@@ -178,4 +212,5 @@ module.exports = {
   hasAlreadyPlayed,
   checkedReplies,
   addCheckedReply,
+  playerState,
 };
