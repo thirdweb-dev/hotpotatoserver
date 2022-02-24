@@ -93,18 +93,18 @@ const currentPlayers = () => {
 };
 
 const playerState = async (address) => {
-  const played = hasAlreadyPlayed(address);
-  const eligible = eligibleForTransfer(address);
+  const hasPlayed = hasAlreadyPlayed(address);
+  const isEligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
-  const registered = hasRegistered(address);
+  const isRegistered = hasRegistered(address);
   const isOwner =
     (await nftContract.get(currentRound())).owner.toLowerCase() ===
     address.toLowerCase();
   return {
-    played,
-    eligible,
+    hasPlayed,
+    isEligible,
     username,
-    registered,
+    isRegistered,
     isOwner,
   };
 };
@@ -116,7 +116,6 @@ const eligibleForTransfer = (address) => {
       (player) => player.address.toLowerCase() === address.toLowerCase()
     ).length === 0 && wallets()[address] !== undefined
   );
-
 };
 
 const hasAlreadyPlayed = (address) => {
@@ -131,7 +130,6 @@ const hasAlreadyPlayed = (address) => {
 const hasRegistered = (address) => {
   const walletList = wallets();
   return walletList[ethers.utils.getAddress(address)] !== undefined;
-
 };
 
 const writeGameState = (state) => {
