@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
   console.log("New Transfer!", from, to, tokenId);
   if (tokenId.toNumber() === db.currentRound()) {
-    db.recordTransfer(to);
+    db.recordTransfer(from, to);
   }
   await twitter.tweetTransfer(to);
 });
@@ -89,7 +89,11 @@ app.get("/state", (req, res) => {
 });
 
 app.get("/players", (req, res) => {
-  res.json(db.currentPlayers());
+  const playersWithTwitterHandles = db.currentPlayers().map((playerData) => {
+    const twitter = db.wallets()[playerData.address];
+    return { ...playerData, twitterHandle: twitter };
+  });
+  res.json(playersWithTwitterHandles);
 });
 
 app.get("/potatonft", (req, res) => {
