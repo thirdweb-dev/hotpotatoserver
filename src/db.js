@@ -96,7 +96,8 @@ const playerState = async (address) => {
   const eligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
   const registered = hasRegistered(address);
-  const isOwner = (await nftContract.ownerOf(currentRound())) === address;
+  console.log(currentRound())
+  const isOwner = (await nftContract.get(currentRound())).owner.toLowerCase() === address.toLowerCase();
   return {
     played,
     eligible,
@@ -119,8 +120,8 @@ const hasAlreadyPlayed = (address) => {
 };
 
 const hasRegistered = (address) => {
-  const wallets = this.wallets();
-  return wallets[address] !== undefined;
+  const walletList= wallets();
+  return walletList[address] !== undefined;
 };
 
 const writeGameState = (state) => {
