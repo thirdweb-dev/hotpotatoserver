@@ -1,3 +1,4 @@
+const { ethers } = require("ethers");
 const fs = require("fs");
 const { nftContract } = require("./thirdweb");
 let dataFolder;
@@ -46,7 +47,7 @@ const wallets = () => {
 };
 
 const fetchUsername = (address) => {
-  return wallets()[address];
+  return wallets()[ethers.utils.getAddress(address)];
 };
 
 const checkedReplies = () => {
@@ -96,8 +97,10 @@ const playerState = async (address) => {
   const eligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
   const registered = hasRegistered(address);
-  console.log(currentRound())
-  const isOwner = (await nftContract.get(currentRound())).owner.toLowerCase() === address.toLowerCase();
+  console.log(currentRound());
+  const isOwner =
+    (await nftContract.get(currentRound())).owner.toLowerCase() ===
+    address.toLowerCase();
   return {
     played,
     eligible,
@@ -110,18 +113,26 @@ const playerState = async (address) => {
 const eligibleForTransfer = (address) => {
   const players = currentPlayers();
   //return !players.includes(address);
-  return players.filter((player) => player.address === address).length === 0;
+  return (
+    players.filter(
+      (player) => player.addresstoLowerCase() === address.toLowerCase()
+    ).length === 0 && wallets()[address] !== undefined
+  );
 };
 
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
   // return players.includes(address);
-  return players.filter((player) => player.address === address).length > 0;
+  return (
+    players.filter(
+      (player) => player.address.toLowerCase() === address.toLowerCase()
+    ).length > 0
+  );
 };
 
 const hasRegistered = (address) => {
-  const walletList= wallets();
-  return walletList[address] !== undefined;
+  const walletList = wallets();
+  return walletList[ethers.utils.getAddress(address)] !== undefined;
 };
 
 const writeGameState = (state) => {
