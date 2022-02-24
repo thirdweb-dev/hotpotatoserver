@@ -78,7 +78,7 @@ const lastTransferTime = () => {
 
 const currentPlayersFile = () => {
   const round = currentRound();
-  const file = roundsInfoPaths + round + "WithTimestamp.json";
+  const file = roundsInfoPaths + round + ".json";
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify([]));
   }
@@ -93,13 +93,11 @@ const currentPlayers = () => {
 
 const eligibleForTransfer = (address) => {
   const players = currentPlayers();
-  //return !players.includes(address);
   return players.filter((player) => player.address === address).length === 0;
 };
 
 const hasAlreadyPlayed = (address) => {
   const players = currentPlayers();
-  // return players.includes(address);
   return players.filter((player) => player.address === address).length > 0;
 };
 
@@ -120,20 +118,31 @@ const addWallet = (address, username) => {
 };
 
 // record every NFT transfer
-const recordTransfer = (address) => {
+const recordTransfer = (from, to) => {
   // record player address if not already
   const owners = currentPlayers();
+
   // if already played this round, ignore
-  // if (owners.includes(address)) {
-  //   return;
-  // }
-  if (owners.filter((owner) => owner.address === address).length > 0) {
+  if (owners.filter((owner) => owner.address === to).length > 0) {
     return;
   }
-  // owners.push(address);
+
+  // record time held for previous owner
+  for (var i = 0; i < owners.length; i++) {
+    const owner = owners[i];
+    if (owner.address === from) {
+      const timeTransfered = owner.transferedAt;
+      if (timeTransfered > 0) {
+        owner.timeSpent = Date.now() - timeTransfered;
+      }
+      break;
+    }
+  }
+
   owners.push({
-    address,
-    timestamp: new Date().toISOString(),
+    address: to,
+    transferedAt: Date.now(),
+    timeSpent: 0,
   });
 
   fs.writeFileSync(currentPlayersFile(), JSON.stringify(owners));
