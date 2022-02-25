@@ -21,8 +21,8 @@ tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
   console.log("New Transfer from SDK event!", from, to, tokenId.toNumber());
   if (tokenId.toNumber() === db.currentRound()) {
     db.recordTransfer(from, to);
+    await twitter.tweetTransfer(to);
   }
-  await twitter.tweetTransfer(to);
 });
 
 const checkForEndOfRound = async () => {
@@ -88,6 +88,7 @@ cron.schedule("*/10 * * * * *", async () => {
       `Round ${round} | New Transfer detected, recording transfer from ${lastOwner} to ${currentOwner}`
     );
     db.recordTransfer(lastOwner, currentOwner);
+    await twitter.tweetTransfer(currentOwner);
   }
 });
 
