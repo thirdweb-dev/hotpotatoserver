@@ -118,11 +118,11 @@ const getActiveNFT = () => {
     // game ended or not started
     image = "img/cold-potato.gif";
   } else {
-    if (transferCount < 50) {
+    if (transferCount < 10) {
       image = "img/hotpotato1.gif";
-    } else if (transferCount < 100) {
+    } else if (transferCount < 50) {
       image = "img/hotpotato2.gif";
-    } else if (transferCount < 500) {
+    } else if (transferCount < 100) {
       image = "img/hotpotato3.gif";
     }
   }
