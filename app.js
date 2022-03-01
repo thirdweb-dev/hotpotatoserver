@@ -8,6 +8,7 @@ var cron = require("node-cron");
 const express = require("express");
 var cors = require("cors");
 const e = require("express");
+const { ethers } = require("ethers");
 const app = express();
 const port = 3000;
 
@@ -104,7 +105,7 @@ app.get("/state", (req, res) => {
 
 app.get("/players", (req, res) => {
   const playersWithTwitterHandles = db.currentPlayers().map((playerData) => {
-    const twitter = db.wallets()[playerData.address];
+    const twitter = db.wallets()[ethers.utils.getAddress(playerData.address)];
     return { ...playerData, twitterHandle: twitter };
   });
   res.json(playersWithTwitterHandles);
@@ -196,7 +197,7 @@ app.post("/addwallet", async (req, res) => {
 
 app.get("/randomwallet", (req, res) => {
   try {
-    const address = db.randomWallet();
+    const address = ethers.utils.getAddress(db.randomWallet());
     res.json({ address });
   } catch (e) {
     res.sendStatus(404);

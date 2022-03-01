@@ -13,9 +13,10 @@ const landing = "https://hot-potato.xyz/";
 async function tweetTransfer(address) {
   try {
     const username = db.fetchUsername(address);
+    const ens = await ethers.getDefaultProvider().resolveName(address);
     await client.v1.tweet(
       `The 🔥🥔 NFT has been passed to ${
-        username ? "@" + username : address
+        username ? "@" + username : ens
       }\n\nThey have 24 hours to pass the 🔥🥔 NFT!\n\nJoin the 🔥🥔 game 👇 ${landing}`
     );
   } catch (e) {
@@ -68,9 +69,10 @@ async function extractAddressAndRecordUser(text, username) {
 async function tweetLoser(address) {
   try {
     const username = db.fetchUsername(address);
+    const ens = await ethers.getDefaultProvider().resolveName(address);
     await client.v1.tweet(
       `The 🔥🥔 has been dropped by ${
-        username ? "@" + username : address
+        username ? "@" + username : ens
       }\n\nShame. Shame. Shame. 😢\n\nNew round starts now. \n\nJoin the 🔥🥔  NFT game 👇 ${landing}`
     );
   } catch (e) {

@@ -92,7 +92,8 @@ const currentPlayers = () => {
   return JSON.parse(fs.readFileSync(file));
 };
 
-const playerState = async (address) => {
+const playerState = async (userAddress) => {
+  const address = ethers.utils.getAddress(userAddress);
   const hasPlayed = hasAlreadyPlayed(address);
   const isEligible = eligibleForTransfer(address);
   const username = fetchUsername(address);
@@ -173,19 +174,24 @@ const addWallet = (address, username) => {
 };
 
 // record every NFT transfer
-const recordTransfer = (from, to) => {
+const recordTransfer = (fromAddress, toAddress) => {
+  const from = ethers.utils.getAddress(fromAddress);
+  const to = ethers.utils.getAddress(toAddress);
   // record player address if not already
   const owners = currentPlayers();
 
   // if already played this round, ignore
-  if (owners.filter((owner) => owner.address === to).length > 0) {
+  if (
+    owners.filter((owner) => ethers.utils.getAddress(owner.address) === to)
+      .length > 0
+  ) {
     return;
   }
 
   // record time held for previous owner
   for (var i = 0; i < owners.length; i++) {
     const owner = owners[i];
-    if (owner.address === from) {
+    if (ethers.utils.getAddress(owner.address) === from) {
       const timeTransfered = owner.transferedAt;
       if (timeTransfered > 0) {
         owner.timeSpent = Date.now() - timeTransfered;
