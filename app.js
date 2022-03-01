@@ -18,25 +18,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // add transfer listener on the contract
 tw.nftContract.addTransferEventListener(async (from, to, tokenId) => {
-  console.log("New Transfer!", from, to, tokenId);
+  console.log("New Transfer from SDK event!", from, to, tokenId.toNumber());
   if (tokenId.toNumber() === db.currentRound()) {
     db.recordTransfer(from, to);
+    await twitter.tweetTransfer(to);
   }
-  await twitter.tweetTransfer(to);
 });
 
 const checkForEndOfRound = async () => {
   try {
-    // TODO use round number as the token ID
     const round = db.currentRound();
     const currentOwner = (await tw.nftContract.get(round)).owner;
-    console.log(`Round: ${round} | Current Potato owner: ${currentOwner}`);
-
     // Check time since last transfer, end the game if more than 24h have passed
     const lastTransferTime = new Date(db.lastTransferTime()).getTime();
     if (lastTransferTime > 0) {
       const timePassed = Date.now() - lastTransferTime;
-      console.log("Held the Potato for", utils.msToTime(timePassed));
+      console.log(
+        `Round ${round} | ${currentOwner} Held the Potato for ${utils.msToTime(
+          timePassed
+        )}`
+      );
       if (timePassed > MAX_TIME_MS) {
         await twitter.tweetLoser(currentOwner);
         console.log("Round ended!");
@@ -78,6 +79,19 @@ cron.schedule("* * * * *", async () => {
   searchForTweets();
 });
 
+cron.schedule("*/10 * * * * *", async () => {
+  const round = db.currentRound();
+  const currentOwner = (await tw.nftContract.get(round)).owner;
+  const lastOwner = db.lastOwner();
+  if (currentOwner !== lastOwner) {
+    console.log(
+      `Round ${round} | New Transfer detected, recording transfer from ${lastOwner} to ${currentOwner}`
+    );
+    db.recordTransfer(lastOwner, currentOwner);
+    await twitter.tweetTransfer(currentOwner);
+  }
+});
+
 // ENDPOINTS
 
 app.get("/", (req, res) => {
@@ -104,11 +118,11 @@ const getActiveNFT = () => {
     // game ended or not started
     image = "img/cold-potato.gif";
   } else {
-    if (transferCount < 50) {
+    if (transferCount < 10) {
       image = "img/hotpotato1.gif";
-    } else if (transferCount < 100) {
+    } else if (transferCount < 50) {
       image = "img/hotpotato2.gif";
-    } else if (transferCount < 500) {
+    } else if (transferCount < 100) {
       image = "img/hotpotato3.gif";
     }
   }
@@ -181,8 +195,12 @@ app.post("/addwallet", async (req, res) => {
 });
 
 app.get("/randomwallet", (req, res) => {
-  const address = db.randomWallet();
-  res.json({ address });
+  try {
+    const address = db.randomWallet();
+    res.json({ address });
+  } catch (e) {
+    res.sendStatus(404);
+  }
 });
 
 app.get("/playerState", async (req, res) => {

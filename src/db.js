@@ -146,6 +146,13 @@ const hasRegistered = (address) => {
   return walletList[ethers.utils.getAddress(address)] !== undefined;
 };
 
+const lastOwner = () => {
+  if (currentPlayers().length === 0) {
+    return undefined;
+  }
+  return currentPlayers()[currentPlayers().length - 1].address;
+};
+
 const writeGameState = (state) => {
   _gameState = {
     ...gameState(),
@@ -171,7 +178,6 @@ const recordTransfer = (from, to) => {
   const owners = currentPlayers();
 
   // if already played this round, ignore
-
   if (owners.filter((owner) => owner.address === to).length > 0) {
     return;
   }
@@ -214,6 +220,7 @@ const endGame = () => {
 
 module.exports = {
   wallets,
+  lastOwner,
   currentRound,
   currentPlayers,
   lastTransferTime,
