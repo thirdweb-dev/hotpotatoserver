@@ -119,8 +119,10 @@ const eligibleForTransfer = (address) => {
 };
 
 const eligibleWallets = () => {
-  const walletList= Object.keys(wallets());
-  const eligible = walletList.filter((walletList) => eligibleForTransfer(walletList));
+  const walletList = Object.keys(wallets());
+  const eligible = walletList.filter((walletList) =>
+    eligibleForTransfer(walletList)
+  );
   return eligible;
 };
 
@@ -156,7 +158,10 @@ const writeGameState = (state) => {
 const addWallet = (address, username) => {
   fs.writeFileSync(
     walletsFile,
-    JSON.stringify({ ...wallets(), [address]: username })
+    JSON.stringify({
+      ...wallets(),
+      [ethers.utils.getAddress(address)]: username,
+    })
   );
 };
 
@@ -224,5 +229,5 @@ module.exports = {
   addCheckedReply,
   playerState,
   eligibleWallets,
-  randomWallet
+  randomWallet,
 };
