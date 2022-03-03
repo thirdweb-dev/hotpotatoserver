@@ -175,7 +175,11 @@ const addWallet = (address, username) => {
 
 // record every NFT transfer
 const recordTransfer = (fromAddress, toAddress) => {
-  const from = ethers.utils.getAddress(fromAddress);
+  if (!toAddress) {
+    console.log(`no toAddress passed, skipping`);
+    return;
+  }
+  const from = fromAddress ? ethers.utils.getAddress(fromAddress) : "";
   const to = ethers.utils.getAddress(toAddress);
   // record player address if not already
   const owners = currentPlayers();
@@ -185,6 +189,7 @@ const recordTransfer = (fromAddress, toAddress) => {
     owners.filter((owner) => ethers.utils.getAddress(owner.address) === to)
       .length > 0
   ) {
+    console.log(`${to} already owned the potato, skiping`);
     return;
   }
 
